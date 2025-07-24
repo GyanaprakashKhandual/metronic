@@ -1,28 +1,53 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import gsap from 'gsap';
-import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi';
 
 const LoginPage = () => {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const containerRef = useRef(null);
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
+  // ✅ Check if token exists (on initial load)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Optional: verify token with backend here
+      router.push('/projects');
+    }
+  }, [router]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Add your authentication logic here
-    console.log('Logging in with:', { email, password });
-    router.push('/dashboard'); // Redirect after login
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // 👈 ensures cookies are handled
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token); // optional
+        router.push('/projects');
+      } else {
+        setError(data.message || 'Invalid email or password');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center p-4"
       style={{
         backgroundImage: `url('https://res.cloudinary.com/dvytvjplt/image/upload/v1753352793/Gemini_Generated_Image_cxdpw8cxdpw8cxdp_bccdm0.png')`,
@@ -31,7 +56,6 @@ const LoginPage = () => {
       }}
     >
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-
       <motion.div
         ref={containerRef}
         initial={{ opacity: 0 }}
@@ -71,6 +95,8 @@ const LoginPage = () => {
               required
             />
           </div>
+
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           <button
             type="submit"
