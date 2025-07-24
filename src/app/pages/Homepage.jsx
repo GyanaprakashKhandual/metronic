@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   BarChart3, 
   Users, 
@@ -29,8 +30,13 @@ const AnimatedSection = ({ children, delay = 0 }) => {
   return <div ref={ref}>{children}</div>;
 };
 
-export default function Homepage() {
+export default function MetroniqLanding() {
   const heroRef = useRef(null);
+  const router = useRouter();
+
+  const handleLoginClick = () => {
+    router.push('/login');
+  };
 
   useEffect(() => {
     if (heroRef.current) {
@@ -123,7 +129,7 @@ export default function Homepage() {
           <div className="flex items-center space-x-8">
             {/* Metroniq Brand */}
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-blue-500 rounded-xl flex items-center justify-center ">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-blue-500 rounded-xl flex items-center justify-center">
                 <Zap className="w-7 h-7 text-white" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
@@ -141,7 +147,10 @@ export default function Homepage() {
           </div>
 
           {/* Login Button */}
-          <button className="group bg-gradient-to-r from-green-500 to-blue-500 px-6 py-3 rounded-full hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 hover:scale-105 flex items-center space-x-2 text-white font-semibold">
+          <button 
+            onClick={handleLoginClick}
+            className="group bg-gradient-to-r from-green-500 to-blue-500 px-6 py-3 rounded-full hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 hover:scale-105 flex items-center space-x-2 text-white font-semibold"
+          >
             <LogIn className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             <span>Login</span>
           </button>
